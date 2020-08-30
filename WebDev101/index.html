@@ -21,6 +21,19 @@
 <body>
     <!-- This is a comment -->
 
+
+    <!-- Basic Syntax
+        <tag attribute1="value" attribute2="value">
+            // content here
+        </tag>
+    /Basic Syntax -->
+
+
+    <!-- Types of HTML tags
+        // There are two types of HTML Tags 1> Paired tags(p,div,span,etc,.) 2> Unpaired tags(hr,br,input,etc.,)
+    /Types of HTML tags -->
+
+
     <!-- Basic Tag Example -->
     <h1>HTML 5 101</h1>
     <hr>
@@ -59,5 +72,166 @@
     </p>
     <hr>
     <!-- /Paragraphs -->
+
+
+    <!-- Links -->
+    <h1>Links</h1>
+    To go to another page <a href="https://en.wikipedia.org/wiki/Hyperlink">Click Here</a><br>
+    To open the in a new tab page <a href="https://www.w3schools.com/tags/att_a_target.asp" target="_blank">Click Here</a>
+    <hr>
+    <!-- /Links -->
+
+
+    <!-- Images -->
+    <h1>Images</h1>
+    <img src="./assets/astrounaut.png" alt="astrounaut.png" width="500px"/>
+    <hr>
+    <!-- /Images -->
+
+
+    <!-- Tables -->
+    <h1>Tables</h1>
+    <table border="1px">
+        <tr>
+            <th>Title 1</th>
+            <th>Title 2</th>
+            <th>Title 3</th>
+        </tr>
+
+        <tr>
+            <td>content 1</td>
+            <td>content 2</td>
+            <td>content 3</td>
+        </tr>
+
+        <tr>
+            <td colspan="2">content 4</td>
+            <td rowspan="2">content 5</td>
+        </tr>
+         <tr>
+            <td>content 6</td>
+            <td>content 7</td>
+        </tr>
+    </table>
+    <hr>
+    <!-- /Tables -->
+
+
+    <!-- Lists -->
+    <h1>Lists</h1>
+    <h2>Ordered List</h2>
+    <p>
+        There are two types of html tags based on Tags
+        <ol>
+            <li>Paired Tags: (p, div, span, etc.)</li>
+            <li>Unpaired Tags: (hr, br, img, etc.)</li>
+        </ol>
+    </p>
+
+    <h2>Unorderd List</h2>
+    <p>
+        There are two types of html tags based on display
+        <ol>
+            <li>Block: which take the width of the whole page</li>
+            <li>Inline: which take width of it's content</li>
+        </ol>
+    </p>
+
+
+    <h2>Dictionary List</h2>
+    <p>
+        There are two types of html tags based on display
+        <dl>
+            <dt>Block: </dt> 
+            <dd> take the width of the whole page</dd>
+            <dt>Inline:</dt> <dd>which take width of it's content</li>
+        </dl>
+    </p>
+    <hr>
+    <!-- /Lists -->
+
+
+    <!-- Divs and Spans -->
+    <h1>Divs and Spans</h1>
+    <div>
+        A div is a basic block html element.
+    </div>
+    A span <span>basic inline</span> element.
+    <hr>
+    <!-- /Divs and Spans -->
+    
+
+    <!-- Class And Ids -->
+    <h1>Class And Id's</h1>
+    <div class="classname">
+        A Class can be applied to multiple elements
+    </div>
+
+    <div id="idname" class="classname">
+        An Id is unique and can only be applied to one element
+    </div>
+    <!-- /Class And Ids -->
+
+
+    <!-- Forms -->
+    <h1>Form</h1>
+    <form action="" method="GET">
+        <label for="username">Username</label>
+        <input type="text" name="username">
+        <br>
+
+        <label for="email">Email</label>
+        <input type="email" name="email">
+        <br>
+
+        <label for="password">Password</label>
+        <input type="password" name="password">
+        <br>
+
+        <label for="gender">Gender: </label>
+        Male<input type="radio" name="gender">
+        Female<input type="radio" name="gender">
+        Others<input type="radio" name="gender">
+        <br>
+
+        <label for="qualifications">Qualification(s): </label>
+        Graduate<input type="checkbox" name="qualifications">
+        Post-Graduate<input type="checkbox" name="qualifications">
+        PhD<input type="checkbox" name="qualifications">
+        <br>
+
+        <label for="comment">Comment</label>
+        <textarea name="comment" cols="30" rows="10"></textarea>
+        <br>
+        
+        <button type="submit">Submit</button>
+
+    </form>
+    <!-- /Forms -->
+
+
+    <!-- Pre Tag -->
+    <h1>Pre Tag</h1>
+    <pre>
+        Text in a pre element
+        is displayed in a fixed-width
+            font, and it preserves
+        both      spaces and
+        line breaks
+    </pre>
+    <!-- /Pre Tag -->
+
+
+    <!-- Code Tag -->
+    <h1>Code Tag</h1>
+    <p>Code tag is used to show peice of computer code. It is mostly used with pre tag to preserve identations</p>
+    <pre>
+        <code>
+        int main(){
+            printf('Hello world');
+        }
+        </code>
+    </pre>
+    <!-- /Code Tag -->
 </body>
 </html>
