@@ -1,15 +1,15 @@
 /* This is a comment */
 
-/* -- Basic Syntax -- 
+/* -- Basic Syntax -- */ /*
 selector : { 
     property : value;
     property : value;
     .
     .
 }  
--- /Basic Syntax -- */
+/* -- /Basic Syntax -- */
 
-/* -- Selectors -- 
+/* -- Selectors -- */ /*
 * : universal selector
 
 element : element selector
@@ -24,17 +24,17 @@ element[attr] : attribute selector
 element[attrA="value"]: selects attribute with specific value
 element[attrA*="value"]: selects element with attribute A containing any instance of value
 elememt[attrA~="value"]: selects element with attribute A containing excatly one whitespace seperated instance of value
--- /Selectors -- */
+/* -- /Selectors -- */
 
-/* Psuedo Elements
+/* -- Psuedo Elements -- */ /*
 element::before
 element::after
 element::first-letter
 element::first-line
 element::selection
-/Psuedo ELements */
+/* -- /Psuedo ELements -- */
 
-/* Psuedo Classes
+/* -- Psuedo Classes -- */ /*
 element:hover
 element:active
 element:focus
@@ -57,4 +57,32 @@ element:nth-last-type()
 element:nth-last-of-type()
 element:only-child
 element:only-of-type
-Psuedo Classes */
+/* -- Psuedo Classes -- */
+
+/* -- Cascade and Conflicts -- */
+span {
+  background: red;
+}
+
+span {
+  /* this is a conflict */
+  background: blue; /* the bottom most rule in the cascade is applied */
+}
+/* -- /Cascade and Conflicts -- */
+
+/* -- Inheritance -- */ /* 
+    A rule applied to a parent element is automatically applied to
+    all its child.
+    but if the child elements has any rule of there own, those rule will override
+    the inherited rule
+/* -- /Inheritance -- */
+
+/* -- Specificity -- */ /* 
+    Every css rule is given a ranking based on selectors known as specificity. So in case
+    of conflicts the rule with greater specificity wins.
+
+    ID - 100 points
+    Classes, attribute or pseduo-classes - 10 points
+    Elements or pseudo elements - 1 point
+    * - 0 points
+/* -- /Specificity -- */
