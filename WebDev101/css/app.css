@@ -86,3 +86,29 @@ span {
     Elements or pseudo elements - 1 point
     * - 0 points
 /* -- /Specificity -- */
+
+/* -- The Important Exception -- */ /*
+    important property in CSS means that all subsequent rules on an element are to be ignored, 
+    and the rule denoted by ! important is to be applied. 
+    This rule overrides all previous styling rules 
+    ​-- the ! important property increases its priority. */
+.bg-red {
+  background: red !important;
+}
+/* -- /The Important Exception -- */
+
+/* -- The Box Model -- */ /*
+-------------------------------------
+|Margin                             |
+|    |`````````````````````````|    |
+|    | padding                 |    |
+|    |    |`````width`````|    |    |
+|    |  height content    |    |    |
+|    |    |_______________|    |    |
+|    |                         |    |
+|    |_________________________|    |
+|                                   |
+|___________________________________| 
+
+margin overlap
+/* -- /The Box Model -- */
