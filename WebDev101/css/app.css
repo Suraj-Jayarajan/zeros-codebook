@@ -1,0 +1,60 @@
+/* This is a comment */
+
+/* -- Basic Syntax -- 
+selector : { 
+    property : value;
+    property : value;
+    .
+    .
+}  
+-- /Basic Syntax -- */
+
+/* -- Selectors -- 
+* : universal selector
+
+element : element selector
+#id_name : id selector
+.classname : class selector
+elementA elementB : decendent selector
+selector, selector: group selector
+elementA > elementB: Child Selector
+elementA ~ elementB: Sibling Selector
+elementA + elementB: adjecent selector
+element[attr] : attribute selector
+element[attrA="value"]: selects attribute with specific value
+element[attrA*="value"]: selects element with attribute A containing any instance of value
+elememt[attrA~="value"]: selects element with attribute A containing excatly one whitespace seperated instance of value
+-- /Selectors -- */
+
+/* Psuedo Elements
+element::before
+element::after
+element::first-letter
+element::first-line
+element::selection
+/Psuedo ELements */
+
+/* Psuedo Classes
+element:hover
+element:active
+element:focus
+element:visited
+element:valid
+element:checked
+element:disabled
+element:enabled
+elemnet:has()
+element:not()
+element:first
+element:first-child
+element:first-of-type
+element:last
+element:last-child
+element:last-of-type
+element:nth-child()
+element:nth-of-type()
+element:nth-last-type()
+element:nth-last-of-type()
+element:only-child
+element:only-of-type
+Psuedo Classes */
