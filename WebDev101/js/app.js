@@ -75,3 +75,62 @@ let toStr = (53).toString();
 // shorthand operators: +=,-=,*=,/=,x++,x--,++x,--x,
 
 //==/DATA TYPES AND VARIABLES ====================================================//
+
+
+
+//== INPUTS ======================================================================//
+// On Browser
+let isYes = confirm('Is it true?');
+let ans = prompt('What is your name');
+
+// On Document  
+let input = document.querySelector('input[name="username"]').value;
+//==/INPUTS ======================================================================//
+
+
+
+//== CONDITIONAL LOGIC ===========================================================//
+if(isYes){
+    alert('Yes');
+}
+else{
+    alert('No');
+}
+
+
+switch(ans){
+    case 'Suraj':
+        alert('Sounds like a unoticable name');
+        break;
+    case 'Ashish':
+        alert('Too Common');
+        break;
+     default:
+         alert('dumb');
+         break;
+}
+//== /CONDITIONAL LOGIC ==========================================================//
+
+
+
+//== LOOPS =======================================================================// 
+//
+i = 0;
+do{
+    document.write(' '+i);
+    i++;
+}while(i<10);
+document.write('<br>    ');
+
+i=0;
+while(i<10){
+    document.write(' '+i);
+    i++;
+}
+document.write('<br>    ');
+
+
+for(let i=0;i<10;i++){
+    document.write(' '+i);
+}
+//== /LOOPS ======================================================================// 
