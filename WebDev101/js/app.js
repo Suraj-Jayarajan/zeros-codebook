@@ -1,6 +1,21 @@
 /* 
 ************************************************************************************
     NOTE: JS BLUEPRINT
+    - JS deceptively looks like other programming languages
+    - Objects: are not OOP based, they are just collection of key value pairs 
+        (Associative Arrays) where value is a JS data type
+    - Whenever a js code runs JS engine creates an excution context at a global 
+        context, this contains two things by default
+        - Global Obj (Global means not attached to any function)
+        - this
+        -------------------------------------------------------------
+        |   Excecution Context                                      |
+        |   -------------------------     -----------------------   |
+        |   |  Global Object        |     |     this            |   |
+        |   | (for browser window)  |     |                     |   |
+        |   |_______________________|     |_____________________|   |
+        |___________________________________________________________|
+    
 ************************************************************************************
 */
 
@@ -114,7 +129,7 @@ switch(ans){
 
 
 //== LOOPS =======================================================================// 
-//
+// do-while
 i = 0;
 do{
     document.write(' '+i);
@@ -122,6 +137,7 @@ do{
 }while(i<10);
 document.write('<br>    ');
 
+// while
 i=0;
 while(i<10){
     document.write(' '+i);
@@ -129,8 +145,102 @@ while(i<10){
 }
 document.write('<br>    ');
 
-
+// for
 for(let i=0;i<10;i++){
     document.write(' '+i);
 }
+
+// for in
+for(let i in arr){
+    console.log('>>For in',i,arr[i]);
+}
+
+for(let o in obj){
+    console.log('>>For in',i,obj[o]);
+}
+
+
+// for of
+arr = ['A','B','C','D'];
+for(let i of arr){
+    console.log('>>For of',i);
+}
+
+for(let o of Object.keys(obj)){
+    console.log('>>For of',obj[o]);
+}
 //== /LOOPS ======================================================================// 
+
+
+
+//== FUNCTIONS ===================================================================//
+function newMethod(par1,par2,par3=0){
+    return par1 + par2 + par3;
+}
+
+console.log('>>fn', newMethod(1,3));
+//== /FUNCTIONS ==================================================================//
+
+
+
+//== OBJECTS =====================================================================//
+let obj0 = {
+    var1 : 10,
+    var2 : 'NEEW',
+    var3 : ['a','b','c'],
+    var4 : function(){
+        return true;
+    }
+}
+
+console.log(obj0.var3)
+//==/OBJECTS =====================================================================//
+
+
+
+//== OOPS ========================================================================//
+/**
+ * JavaScript has no formal support for classes, hences it achieves OOP by using 
+ * associative arrays, which are Objects
+ *********************************************************************************/
+
+
+
+/** 
+ *  METHOD 1: FUNCTION AS A CLASS
+ *  Constructor Pattern(Function as a class): Function as returns an object, 
+ *  objects can be initialized by using new keyword. Parameters can also be 
+ *  passed to act as initial values.
+ */
+function Fruit(name=null){
+    return {
+        name: name,
+        color: null,
+        nutrition: null,
+        isRotten: false,
+    }
+}
+
+let apple = new Fruit('Apple');
+console.log('>>Fn Obj', apple);  
+
+
+
+/**
+ * METHOD 2: OBJECT PATTERN
+ */
+let Vegitable = new Object({
+    name: null,
+    color: null,
+    nutrition: null,
+    isRotten: false,
+});
+
+let carrot = Object.create(Vegitable);
+//carrot.name = 'Carrot';
+console.log('>>Obj', carrot);  
+
+
+// NO PROPER INHERITANCE
+
+//==/OOPS ========================================================================//
