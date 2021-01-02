@@ -1,23 +1,38 @@
-/* 
-************************************************************************************
+/*****************************************************************************************
     NOTE: JS BLUEPRINT
-************************************************************************************
-*/
+    - JS deceptively looks like other programming languages
+    - Objects: are not OOP based, they are just collection of key value pairs 
+        (Associative Arrays) where value is a JS data type
+    - Whenever a js code runs JS engine creates an excution context at a global 
+        context, this contains two things by default
+        - Global Obj (Global means not attached to any function)
+        - this
+        -------------------------------------------------------------
+        |   Excecution Context                                      |
+        |   -------------------------     -----------------------   |
+        |   |  Global Object        |     |     this            |   |
+        |   | (for browser window)  |     |                     |   |
+        |   |_______________________|     |_____________________|   |
+        |___________________________________________________________|
+    
+*****************************************************************************************/
 
 
 
-//== COMMENTS ====================================================================//
+//== COMMENTS ==========================================================================//
 
 // Single Line Comment
 /**
  * Block Comments
  */
 
-//==/COMMENTS ====================================================================//
+//== /COMMENTS =========================================================================//
 
 
+use 'strict';
 
-//== OUTPUTS =====================================================================//
+
+//== OUTPUTS ===========================================================================//
 // On Console
 console.log('Abra Kadabra!');
 console.info('Hello World!');
@@ -29,11 +44,11 @@ document.write('Hello World!');
 
 // On Browser
 alert('Hi');
-//==/OUTPUTS =====================================================================//
+//== /OUTPUTS ==========================================================================//
 
 
 
-//== DATA TYPES AND VARIABLES ====================================================//
+//== DATA TYPES AND VARIABLES ==========================================================//
 /**
  * JS is a dynamically typed language, meaning that there exist data types, 
  * but variables are not bound to any of them.
@@ -74,22 +89,22 @@ let toStr = (53).toString();
 // Logical Operators: >,<,>=,<=,==,===,!,!=,!==,
 // shorthand operators: +=,-=,*=,/=,x++,x--,++x,--x,
 
-//==/DATA TYPES AND VARIABLES ====================================================//
+//== /DATA TYPES AND VARIABLES =========================================================//
 
 
 
-//== INPUTS ======================================================================//
+//== INPUTS ============================================================================//
 // On Browser
 let isYes = confirm('Is it true?');
 let ans = prompt('What is your name');
 
 // On Document  
 let input = document.querySelector('input[name="username"]').value;
-//==/INPUTS ======================================================================//
+//== /INPUTS ===========================================================================//
 
 
 
-//== CONDITIONAL LOGIC ===========================================================//
+//== CONDITIONAL LOGIC =================================================================//
 if(isYes){
     alert('Yes');
 }
@@ -109,12 +124,12 @@ switch(ans){
          alert('dumb');
          break;
 }
-//== /CONDITIONAL LOGIC ==========================================================//
+//== /CONDITIONAL LOGIC ===============================================================//
 
 
 
-//== LOOPS =======================================================================// 
-//
+//== LOOPS ============================================================================// 
+// do-while
 i = 0;
 do{
     document.write(' '+i);
@@ -122,6 +137,7 @@ do{
 }while(i<10);
 document.write('<br>    ');
 
+// while
 i=0;
 while(i<10){
     document.write(' '+i);
@@ -129,8 +145,82 @@ while(i<10){
 }
 document.write('<br>    ');
 
-
+// for
 for(let i=0;i<10;i++){
     document.write(' '+i);
 }
-//== /LOOPS ======================================================================// 
+
+// for in
+for(let i in arr){
+    console.log('>>For in',i,arr[i]);
+}
+
+for(let o in obj){
+    console.log('>>For in',i,obj[o]);
+}
+
+
+// for of
+arr = ['A','B','C','D'];
+for(let i of arr){
+    console.log('>>For of',i);
+}
+
+for(let o of Object.keys(obj)){
+    console.log('>>For of',obj[o]);
+}
+//== /LOOPS ===========================================================================// 
+
+
+
+//== FUNCTIONS ========================================================================//
+function newMethod(par1,par2,par3=0){
+    return par1 + par2 + par3;
+}
+
+console.log('>>fn', newMethod(1,3));
+//== /FUNCTIONS =======================================================================//
+
+
+
+//== OBJECTS ==========================================================================//
+/**
+ * These are not OOP objects
+ */
+let obj0 = {
+    var1 : 10,
+    var2 : 'NEEW',
+    var3 : ['a','b','c'],
+    var4 : function(){
+        return true;
+    }
+}
+
+console.log(obj0.var3)
+//== /OBJECTS ==========================================================================//
+
+
+
+//== SELECTORS ========================================================================// 
+let firstHeading = document.querySelector('h1'); // returns first obj, uses css selectors
+let allHeadings = document.querySelectorAll('input'); // returns all objects array, uses css selectors
+document.getElementById('id_name');
+document.getElementsByClassName('class_name');
+document.getElementsByName('name');
+document.getElementsByTagName('tag_name');
+
+
+console.log('>>selectors: ',firstHeading,allHeadings);
+//== /SELECTORS =======================================================================// 
+
+
+
+//== CALLBACKS ========================================================================//
+function firstFunction(p1,callback){
+    if(!p1){
+            callback = () =>{
+                console
+            }
+    }
+}
+//== /CALLBACKS =======================================================================//
