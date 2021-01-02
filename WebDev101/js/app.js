@@ -1,5 +1,4 @@
-/* 
-************************************************************************************
+/*****************************************************************************************
     NOTE: JS BLUEPRINT
     - JS deceptively looks like other programming languages
     - Objects: are not OOP based, they are just collection of key value pairs 
@@ -16,23 +15,24 @@
         |   |_______________________|     |_____________________|   |
         |___________________________________________________________|
     
-************************************************************************************
-*/
+*****************************************************************************************/
 
 
 
-//== COMMENTS ====================================================================//
+//== COMMENTS ==========================================================================//
 
 // Single Line Comment
 /**
  * Block Comments
  */
 
-//==/COMMENTS ====================================================================//
+//== /COMMENTS =========================================================================//
 
 
+use 'strict';
 
-//== OUTPUTS =====================================================================//
+
+//== OUTPUTS ===========================================================================//
 // On Console
 console.log('Abra Kadabra!');
 console.info('Hello World!');
@@ -44,11 +44,11 @@ document.write('Hello World!');
 
 // On Browser
 alert('Hi');
-//==/OUTPUTS =====================================================================//
+//== /OUTPUTS ==========================================================================//
 
 
 
-//== DATA TYPES AND VARIABLES ====================================================//
+//== DATA TYPES AND VARIABLES ==========================================================//
 /**
  * JS is a dynamically typed language, meaning that there exist data types, 
  * but variables are not bound to any of them.
@@ -89,22 +89,22 @@ let toStr = (53).toString();
 // Logical Operators: >,<,>=,<=,==,===,!,!=,!==,
 // shorthand operators: +=,-=,*=,/=,x++,x--,++x,--x,
 
-//==/DATA TYPES AND VARIABLES ====================================================//
+//== /DATA TYPES AND VARIABLES =========================================================//
 
 
 
-//== INPUTS ======================================================================//
+//== INPUTS ============================================================================//
 // On Browser
 let isYes = confirm('Is it true?');
 let ans = prompt('What is your name');
 
 // On Document  
 let input = document.querySelector('input[name="username"]').value;
-//==/INPUTS ======================================================================//
+//== /INPUTS ===========================================================================//
 
 
 
-//== CONDITIONAL LOGIC ===========================================================//
+//== CONDITIONAL LOGIC =================================================================//
 if(isYes){
     alert('Yes');
 }
@@ -124,11 +124,11 @@ switch(ans){
          alert('dumb');
          break;
 }
-//== /CONDITIONAL LOGIC ==========================================================//
+//== /CONDITIONAL LOGIC ===============================================================//
 
 
 
-//== LOOPS =======================================================================// 
+//== LOOPS ============================================================================// 
 // do-while
 i = 0;
 do{
@@ -169,21 +169,24 @@ for(let i of arr){
 for(let o of Object.keys(obj)){
     console.log('>>For of',obj[o]);
 }
-//== /LOOPS ======================================================================// 
+//== /LOOPS ===========================================================================// 
 
 
 
-//== FUNCTIONS ===================================================================//
+//== FUNCTIONS ========================================================================//
 function newMethod(par1,par2,par3=0){
     return par1 + par2 + par3;
 }
 
 console.log('>>fn', newMethod(1,3));
-//== /FUNCTIONS ==================================================================//
+//== /FUNCTIONS =======================================================================//
 
 
 
-//== OBJECTS =====================================================================//
+//== OBJECTS ==========================================================================//
+/**
+ * These are not OOP objects
+ */
 let obj0 = {
     var1 : 10,
     var2 : 'NEEW',
@@ -194,53 +197,30 @@ let obj0 = {
 }
 
 console.log(obj0.var3)
-//==/OBJECTS =====================================================================//
+//== /OBJECTS ==========================================================================//
 
 
 
-//== OOPS ========================================================================//
-/**
- * JavaScript has no formal support for classes, hences it achieves OOP by using 
- * associative arrays, which are Objects
- *********************************************************************************/
+//== SELECTORS ========================================================================// 
+let firstHeading = document.querySelector('h1'); // returns first obj, uses css selectors
+let allHeadings = document.querySelectorAll('input'); // returns all objects array, uses css selectors
+document.getElementById('id_name');
+document.getElementsByClassName('class_name');
+document.getElementsByName('name');
+document.getElementsByTagName('tag_name');
+
+
+console.log('>>selectors: ',firstHeading,allHeadings);
+//== /SELECTORS =======================================================================// 
 
 
 
-/** 
- *  METHOD 1: FUNCTION AS A CLASS
- *  Constructor Pattern(Function as a class): Function as returns an object, 
- *  objects can be initialized by using new keyword. Parameters can also be 
- *  passed to act as initial values.
- */
-function Fruit(name=null){
-    return {
-        name: name,
-        color: null,
-        nutrition: null,
-        isRotten: false,
+//== CALLBACKS ========================================================================//
+function firstFunction(p1,callback){
+    if(!p1){
+            callback = () =>{
+                console
+            }
     }
 }
-
-let apple = new Fruit('Apple');
-console.log('>>Fn Obj', apple);  
-
-
-
-/**
- * METHOD 2: OBJECT PATTERN
- */
-let Vegitable = new Object({
-    name: null,
-    color: null,
-    nutrition: null,
-    isRotten: false,
-});
-
-let carrot = Object.create(Vegitable);
-//carrot.name = 'Carrot';
-console.log('>>Obj', carrot);  
-
-
-// NO PROPER INHERITANCE
-
-//==/OOPS ========================================================================//
+//== /CALLBACKS =======================================================================//
