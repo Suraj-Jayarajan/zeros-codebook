@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+      "use strict";
+
+      //==== GLOBALS =====================================================//
+      const W = window.innerWidth,
+        H = window.innerHeight;
+      const canvas = document.getElementById("canvas");
+
+      const ctx = canvas.getContext("2d");
+      const background =
+        "linear-gradient(to right, rgb(15, 12, 41), rgb(48, 43, 99), rgb(36, 36, 62))";
+      const noOfCircle = 500;
+      const maxRadius = 5;
+      const speed = 1;
+      const gravity = 0.01;
+      const friction = 1;
+
+      let circleArr;
+      let miniCircleArr;
+      let mouse = {
+        x: undefined,
+        y: undefined,
+      };
+      //== /GLOBALS ====================================================//
+
+      //== SETUP =======================================================//
+      //mouse event listner
+      canvas.addEventListener("mousemove", function (e) {
+        mouse.x = e.x;
+        mouse.y = e.y;
+      });
+
+      // Responsiveness
+      canvas.addEventListener("resize", function () {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+
+        start();
+      });
+      //== /SETUP ======================================================//
+
+      //== OBJECTS =====================================================//
+      // Circle Class
+      var Circle = function (x, y, r, dx, dy) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.dx = dx;
+        this.dy = dy;
+      };
+      Circle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, Math.PI * 2, false);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "white";
+
+        ctx.lineWidth = "1";
+        ctx.strokeStyle = "#fff";
+        ctx.fillStyle = "#ccc";
+      };
+      Circle.prototype.update = function () {
+        //boundary
+        if (this.x - this.r < 0 || this.x + this.r > W) {
+          this.dx = -this.dx;
+        }
+        if (this.y - this.r < 0) {
+          this.dy = -this.dy;
+        }
+
+        // gravity + boundary
+        if (this.y + this.r + this.dy > H) {
+          this.dy = -this.dy * friction;
+        } else {
+          this.dy += gravity;
+        }
+
+        // motion
+        this.x += this.dx;
+        this.y += this.dy;
+
+        //interactivity
+        if (
+          mouse.x - this.x < 50 &&
+          mouse.x - this.x > -50 &&
+          mouse.y - this.y < 50 &&
+          mouse.y - this.y > -50
+        ) {
+          this.r++;
+          ctx.lineWidth = "0.5";
+
+          let xCurve = this.x > W / 2 ? this.r * 2 : -this.r * 2;
+          let yCurve = this.y > H / 2 ? this.dy * 2 : -this.dy * 2;
+
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y);
+          ctx.quadraticCurveTo(
+            this.x + xCurve,
+            this.y + yCurve,
+            mouse.x,
+            mouse.y
+          );
+          ctx.stroke();
+          if (this.r > 3) {
+            this.r = 3;
+          }
+        } else if (this.r > 2) {
+          this.r--;
+        }
+
+        ////
+        this.draw();
+      };
+      //== OBJECTS =====================================================//
+
+      //== METHODS =====================================================//
+      //-----------------------------------------------------------------
+      function getDistance(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+      }
+      //-----------------------------------------------------------------
+
+      //-----------------------------------------------------------------
+      function start() {
+        canvas.width = W;
+        canvas.height = H;
+
+        circleArr = [];
+        miniCircleArr = [];
+        canvas.style.background = background;
+        ctx.lineWidth = "1";
+        ctx.strokeStyle = "#FF1EAD";
+        ctx.fillStyle = "#000";
+
+        for (var v = 0; v < noOfCircle; v++) {
+          var r = Math.random() * maxRadius;
+          var x = Math.random() * (W - r * 2) + r;
+          var y = Math.random() * (H / 2 - r * 2) + r;
+          var dx = (Math.random() - 0.5) * speed;
+          var dy = (Math.random() - 0.5) * speed;
+
+          // to prevent spawn overlap
+          if (v !== 0) {
+            for (var w = 0; w < circleArr.length; w++) {
+              if (
+                getDistance(x, y, circleArr[w].x, circleArr[w].y) - r * 2 <
+                0
+              ) {
+                var x = Math.random() * (W - r * 2) + r;
+                var y = Math.random() * (H - r * 2) + r;
+                w = -1;
+              }
+            }
+          }
+
+          var c = new Circle(x, y, r, dx, dy);
+          circleArr.push(c);
+        }
+
+        ////
+        update();
+      }
+      //-----------------------------------------------------------------
+
+      //-----------------------------------------------------------------
+      function update() {
+        requestAnimationFrame(update);
+        ctx.clearRect(0, 0, W, H);
+        /////
+        for (var v = 0; v < circleArr.length; v++) {
+          circleArr[v].update();
+        }
+      }
+      //-----------------------------------------------------------------
+      //== /METHODS =====================================================//
+
+      //== MAIN =========================================================//
+      start();
+      //== /MAIN ========================================================//
+    </script>
+  </body>
+</html>
