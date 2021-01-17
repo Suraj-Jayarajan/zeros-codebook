@@ -19,7 +19,7 @@
     <script>
       "use strict";
 
-      //==== GLOBALS =====================================================//
+      //== GLOBALS =====================================================//
       const W = window.innerWidth,
         H = window.innerHeight;
       const canvas = document.getElementById("canvas");
@@ -29,9 +29,10 @@
         "linear-gradient(to right, rgb(15, 12, 41), rgb(48, 43, 99), rgb(36, 36, 62))";
       const noOfCircle = 500;
       const maxRadius = 5;
-      const speed = 1;
-      const gravity = 1;
+      const speed = 5;
+      const gravity = 0.1;
       const friction = 1;
+      const interactionDistance = W / 8;
 
       let circleArr;
       let miniCircleArr;
@@ -103,13 +104,13 @@
 
         //interactivity
         if (
-          mouse.x - this.x < 50 &&
-          mouse.x - this.x > -50 &&
-          mouse.y - this.y < 50 &&
-          mouse.y - this.y > -50
+          mouse.x - this.x < interactionDistance &&
+          mouse.x - this.x > -interactionDistance &&
+          mouse.y - this.y < interactionDistance &&
+          mouse.y - this.y > -interactionDistance
         ) {
           this.r++;
-          ctx.lineWidth = "0.5";
+          ctx.lineWidth = "0.1";
 
           let xCurve = this.x > W / 2 ? this.r * 2 : -this.r * 2;
           let yCurve = this.y > H / 2 ? this.dy * 2 : -this.dy * 2;
@@ -157,7 +158,7 @@
         for (var v = 0; v < noOfCircle; v++) {
           var r = Math.random() * maxRadius;
           var x = Math.random() * (W - r * 2) + r;
-          var y = Math.random() * (H / 2 - r * 2) + r;
+          var y = Math.random() * (H - r * 2) + r;
           var dx = (Math.random() - 0.5) * speed;
           var dy = (Math.random() - 0.5) * speed;
 
@@ -188,6 +189,9 @@
       function update() {
         requestAnimationFrame(update);
         ctx.clearRect(0, 0, W, H);
+        ctx.font = "3rem Comic Sans MS";
+        ctx.textAlign = "center";
+        ctx.fillText("This is 2021", W / 2, H / 2);
         /////
         for (var v = 0; v < circleArr.length; v++) {
           circleArr[v].update();
