@@ -1,13 +1,14 @@
-/* Kerala Traditional Styles */
+/* Modern Kerala Style */
 :root {
-    --gold: #D4AF37;
-    --deep-red: #8B0000;
-    --sacred-black: #1A0F0F;
-    --temple-stone: #E8E0D5;
-    --leaf-green: #2E4A25;
-    --palm-brown: #3E2723;
-    --sacred-white: #FFF6E9;
-    --border-pattern: #C19A6B;
+    --primary: #FF6B6B;
+    --secondary: #4ECDC4;
+    --accent: #45B7D1;
+    --dark: #2C3E50;
+    --light: #F7F9FC;
+    --gold: #FFD700;
+    --text: #2C3E50;
+    --gradient-start: #FF6B6B;
+    --gradient-end: #4ECDC4;
 }
 
 * {
@@ -24,25 +25,26 @@
 
 body {
     font-family: 'Mulish', sans-serif;
-    background: var(--sacred-black);
-    color: var(--sacred-white);
+    background: var(--light);
+    color: var(--text);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
-    color: var(--gold);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
 }
 
 .sacred-border {
     position: relative;
     min-height: 100vh;
-    background: var(--sacred-black);
-    border: 12px solid;
-    border-image: linear-gradient(45deg, var(--deep-red), var(--gold), var(--deep-red)) 1;
-    animation: borderFlow 10s ease infinite;
-    margin: 20px;
+    background: var(--light);
+    box-shadow: 0 0 100px rgba(0,0,0,0.05) inset;
 }
 
 .site-header {
@@ -78,13 +80,13 @@ h1, h2, h3, h4 {
 
 .temple-gates {
     position: relative;
-    height: 80vh;
+    height: 100vh;
+    width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(rgba(26,15,15,0.7), rgba(26,15,15,0.7)),
-                url('images/kerala-temple.jpg') center/cover no-repeat;
+    background: var(--light);
 }
 
 #templeCanvas {
@@ -93,35 +95,89 @@ h1, h2, h3, h4 {
     width: 100%;
     height: 100%;
     z-index: 1;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    opacity: 0.1;
 }
 
 .sacred-text {
     position: relative;
     z-index: 2;
     text-align: center;
-    padding: 2rem;
-    background: rgba(26,15,15,0.85);
-    border: 1px solid var(--gold);
-    max-width: 600px;
+    padding: 4rem 2rem;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    max-width: 700px;
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.1),
+        0 0 0 1px rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(78,205,196,0.1));
+    border-radius: 100px;
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(5px);
 }
 
 .sacred-text h1 {
-    font-size: 3.5rem;
-    margin-bottom: 2rem;
-    line-height: 1.2;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    max-width: 600px;
 }
 
-.sanskrit-quote {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
-    color: var(--temple-stone);
-    margin-bottom: 1rem;
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--dark);
+    opacity: 0.8;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
 }
 
-.quote-meaning {
-    color: var(--gold);
-    font-style: italic;
-    font-size: 1.2rem;
+.hero-cta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.cta-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(255,107,107,0.2);
+}
+
+.cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255,107,107,0.3);
+}
+
+.cta-secondary {
+    color: var(--dark);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    border: 2px solid rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.cta-secondary:hover {
+    background: rgba(0,0,0,0.05);
 }
 
 .divine-wisdom {
@@ -174,24 +230,49 @@ h1, h2, h3, h4 {
 }
 
 .service-card {
-    background: rgba(26,15,15,0.8);
-    padding: 2rem;
-    border: 1px solid var(--gold);
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 16px;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.08),
+        0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .service-card:hover {
     transform: translateY(-5px);
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.12),
+        0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.service-card:hover::before {
+    opacity: 1;
 }
 
 .service-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1.5rem;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 2rem;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+    filter: hue-rotate(180deg) saturate(1.5);
 }
 
 .service-icon.prasna { background-image: url('images/prasna-icon.png'); }
