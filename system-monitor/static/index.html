@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="v        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }ntent="width=device-width, initial-scale=1.0">
+    <title>System Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .chart-wrapper {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center">System Monitor</h1>
+        
+        <!-- System Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-2">System Information</h3>
+                <p class="text-gray-400">Platform: <span id="platform" class="text-white"></span></p>
+                <p class="text-gray-400">Version: <span id="platform-version" class="text-white"></span></p>
+                <p class="text-gray-400">Boot Time: <span id="boot-time" class="text-white"></span></p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-2">CPU</h3>
+                <p class="text-gray-400">Usage: <span id="cpu-percent" class="text-white"></span>%</p>
+                <p class="text-gray-400">Cores: <span id="cpu-count" class="text-white"></span></p>
+                <p class="text-gray-400">Frequency: <span id="cpu-freq" class="text-white"></span> MHz</p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-2">Memory</h3>
+                <p class="text-gray-400">Total: <span id="memory-total" class="text-white"></span> GB</p>
+                <p class="text-gray-400">Available: <span id="memory-available" class="text-white"></span> GB</p>
+                <p class="text-gray-400">Usage: <span id="memory-percent" class="text-white"></span>%</p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-2">Disk</h3>
+                <p class="text-gray-400">Total: <span id="disk-total" class="text-white"></span> GB</p>
+                <p class="text-gray-400">Used: <span id="disk-used" class="text-white"></span> GB</p>
+                <p class="text-gray-400">Usage: <span id="disk-percent" class="text-white"></span>%</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">CPU Usage History</h3>
+                <div class="chart-container">
+                    <canvas id="cpuChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Memory Usage History</h3>
+                <div class="chart-container">
+                    <canvas id="memoryChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Network Traffic</h3>
+                <div class="chart-container">
+                    <canvas id="networkChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Disk Usage</h3>
+                <div class="chart-container">
+                    <canvas id="diskChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                }
+            }
+        };
+
+        const cpuChart = new Chart(document.getElementById('cpuChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage %',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+
+        const memoryChart = new Chart(document.getElementById('memoryChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage %',
+                    data: [],
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+
+        const networkChart = new Chart(document.getElementById('networkChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Sent (MB)',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }, {
+                    label: 'Received (MB)',
+                    data: [],
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+
+        const diskChart = new Chart(document.getElementById('diskChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Used', 'Available'],
+                datasets: [{
+                    data: [0, 100],
+                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // WebSocket connection
+        const ws = new WebSocket('ws://localhost:8000/ws');
+        const maxDataPoints = 50;
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            
+            // Update system info
+            document.getElementById('platform').textContent = data.system.platform;
+            document.getElementById('platform-version').textContent = data.system.platform_version;
+            document.getElementById('boot-time').textContent = data.system.boot_time;
+            
+            // Update CPU info
+            document.getElementById('cpu-percent').textContent = data.cpu.percent.toFixed(1);
+            document.getElementById('cpu-count').textContent = data.cpu.count;
+            document.getElementById('cpu-freq').textContent = data.cpu.freq.toFixed(0);
+            
+            // Update memory info
+            document.getElementById('memory-total').textContent = data.memory.total.toFixed(1);
+            document.getElementById('memory-available').textContent = data.memory.available.toFixed(1);
+            document.getElementById('memory-percent').textContent = data.memory.percent.toFixed(1);
+            
+            // Update disk info
+            document.getElementById('disk-total').textContent = data.disk.total.toFixed(1);
+            document.getElementById('disk-used').textContent = data.disk.used.toFixed(1);
+            document.getElementById('disk-percent').textContent = data.disk.percent.toFixed(1);
+
+            // Update charts
+            updateChart(cpuChart, data.timestamp, data.cpu.percent);
+            updateChart(memoryChart, data.timestamp, data.memory.percent);
+            updateNetworkChart(networkChart, data.timestamp, data.network.bytes_sent, data.network.bytes_recv);
+            updateDiskChart(diskChart, data.disk.used, data.disk.total - data.disk.used);
+        };
+
+        function updateChart(chart, label, value) {
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(value);
+            
+            if (chart.data.labels.length > maxDataPoints) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            
+            chart.update('none');
+        }
+
+        function updateNetworkChart(chart, label, sent, recv) {
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(sent);
+            chart.data.datasets[1].data.push(recv);
+            
+            if (chart.data.labels.length > maxDataPoints) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+                chart.data.datasets[1].data.shift();
+            }
+            
+            chart.update('none');
+        }
+
+        function updateDiskChart(chart, used, available) {
+            chart.data.datasets[0].data = [used, available];
+            chart.update('none');
+        }
+    </script>
+</body>
+</html>
