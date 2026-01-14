@@ -1,4 +1,5 @@
-# Nuxt 101 
+# Nuxt 101
+
 > - Built on top of vue
 > - Accuired by vercel
 > - Universal Rendering (SSR + CSR)
@@ -10,12 +11,15 @@
 > - Uses Vue 3 + Composition API + Nuxt Composables
 
 ## Installation
+
 **Install**
+
 ```bash
 npm create nuxt@latest <project-path>
 ```
 
 **Run**
+
 ```bash
 npm run dev -- -o
 ```
@@ -23,29 +27,32 @@ npm run dev -- -o
 ## Folder Structure
 
 ### Nuxt 3
+
 ```
 .
 |__ .nuxt/
 |__ layouts/
 |   |__ default.vue
-|__ server               // server routes
-|   |__ api
-|      |__ <route-name>.js
+|
+|__ server/               // Nitro Routes
+|   |__ api/
+|       |__ products.js
+|       |__ [id].js
 |
 |__ pages/
-    |__ index.vue         // Secondary Entry point, recommended as primary
-    |__ about.vue
-    |__ error.vue         // default error page
-    |__ Products /
-        |__ index.vue
-        |__ product.vue
+|   |__ index.vue         // Secondary Entry point, recommended as primary
+|   |__ about.vue
+|   |__ error.vue         // default error page
+|   |__ Products /
+|       |__ index.vue
+|       |__ product.vue
+|
 |__ components/
 |   |__ ProductCard.vue
 |
 |__ app.vue               // Default Entry point, can be deleted
 |__ nuxt.config.ts
 |__ tsconfig.json
-|
 |__ node_modules/
 |__ package.json
 |__ package-lock.json
@@ -55,8 +62,9 @@ npm run dev -- -o
 ```
 
 ## nuxt.config.ts
+
 ```js
-export default defineNuxtConfig({
+export defailt defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss'],
     app: {
         head: {                                  // html head
@@ -73,63 +81,59 @@ export default defineNuxtConfig({
 ```
 
 ## Adding Pages
+
 - All vue components in the pages will be considered as separate pages
 - App.vue Default entry point, if you delete this create an index.vue in pages folder
 - Routing is automatically handled in pages
 - Every folder inside pages requires to have index.vue
-- 
+-
 
 ```
 .
 |__ pages/
     |__ index.vue                              <base-url>  -- home page
     |__ about.vue                              /about
-    |__ products /                             
+    |__ products /
         |__ index.vue                          /products
         |__ [id].vue                           /products/:id
 ```
 
 ### [id].vue
+
 > Route: /products/:id
 
 ```vue
 <!--pages/products/[id].vue-->
-<template>
-    Product Details for id:  {{ id }}
-</template>
+<template>Product Details for id: {{ id }}</template>
 
 <script setup>
-const {id} = useRoute().params;
+const { id } = useRoute().params;
 </script>
 ```
 
 ### Error.vue
+
 > error.vue page is the default page where nuxt redirects during error
 
 > Programmaticaly we can redirect using createError() method
 
 ```vue
 <template>
-    <div>
-        Status: {{error.statusCode}}
-        message: {{error.message}}
-        <button
-            @click="handleClearError"
-        >
-            Go Home
-        </button>
-    </div>
-
+  <div>
+    Status: {{ error.statusCode }} message: {{ error.message }}
+    <button @click="handleClearError">Go Home</button>
+  </div>
 </template>
 <script setup>
-defineProps(['error']) // this will automatically have error details
+defineProps(["error"]); // this will automatically have error details
 
-const handleClearError = () => clearError({redirect: '/'})
+const handleClearError = () => clearError({ redirect: "/" });
 </script>
 ```
 
 ## NuxtLink
-> Used instead of regular anchor tag / router-link
+
+> Used instead of regular anchor tag/ router-link
 
 ```vue
 <NuxtLink to="/products">Products</NuxtLink>
@@ -137,8 +141,10 @@ const handleClearError = () => clearError({redirect: '/'})
 ```
 
 ## Layouts
-> Default.vue is the default layout
+
+> Default.vue is the default page
 > Custom layouts needs to be configured in the folder index.vue
+
 ```
 .
 |__ layouts/
@@ -149,25 +155,27 @@ const handleClearError = () => clearError({redirect: '/'})
 ```vue
 <!-- /layouts/default.vue -->
 <template>
-    <div class="flex flex-wrap gap-4">
-        <!-- Page is going to be rendered as slot, rest can be part of layout -->
-        <slot/> 
-    </div>
+  <div class="flex flex-wrap gap-4">
+    <!-- Page is going to be rendered as slot, rest can be part of layout -->
+    <slot />
+  </div>
 </template>
 ```
 
 ### custom layout for products
+
 ```vue
 <!-- /pages/products/index.vue -->
 <template></template>
 <script setup>
 definePageMeta({
-    layout: 'products'
-})
+  layout: "products",
+});
 </script>
 ```
 
 ## Nuxt Modules
+
 For most packages nuxt provides modules that we can import into our project
 for example in nuxt modules page we can get the tailswind and pinia.
 
@@ -178,39 +186,44 @@ npx nuxt@latest module add tailwindcss pinia
 ```
 
 ## Fetching Data
+
 > useFetch()
 
 ```js
-const {id} = useRoute().params;
-const uri = 'https://api.com/products';
+const { id } = useRoute().params;
+const uri = "https://api.com/products";
 // get list
-const {data: products} =  await useFetch(uri);
+const { data: products } = await useFetch(uri);
 
-// get product
-const {data: product} = await useFetch(uri, {key: id}); 
-if(!product.value) {
-    throw createError({
-        statusCode: 404, 
-        statusMessage: 'Product not found',
-        fatal: true    
-    })
+// get product by id
+const { data: product } = await useFetch(uri, { key: id });
+if (!product.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Product not found",
+    fatal: true,
+  });
 }
 ```
 
-## nuxt.config meta ovveride
-> in nuxt.config.ts we can define head and meta values for the project. But for particular page we might need to have some custom values. for that we can use the following
+> useFetch is a lazy loading function, if the parmeters don't change it will not activate again to save unwanted api calls.
 
-### Option 1: using built in methods
+## nuxt.config meta override
+
+> In nuxt.config.ts we can define head and meta values for the project like external scripts or css.
+> But for particular page we might need to have some custom values. for that we can use the following
+
+#### Option 1: using built in methods
+
 ```js
 useHead({
-    title: 'Product Page',
-    meta: [
-        {name:'', content: ''}
-    ]
-})
+  title: "Product Page",
+  meta: [{ name: "", content: "" }],
+});
 ```
 
-### Option 2: Using Nuxt template
+#### Option 2: Using Nuxt template
+
 ```vue
 <template>
 <div>
@@ -221,4 +234,146 @@ useHead({
 </div>
 
 </template>
+```
+
+## Server Routes
+
+> Nuxt uses a backend server called Nitro.
+> Create a folder called `server` and you declare server routes inside as folders
+
+```
+.
+|__ server/
+|   |__ api/
+|       |__ products.js
+|       |__ [id].js
+|
+```
+
+### GET Request
+
+##### `products.js`
+
+```js
+export default defineEventHanlder(e => {
+    // destructure query params
+    const { name } = useQuery(e);
+
+    // data source
+    const { data : products } =  await $fetch(`https://<data-source-path>/products?name=${name}`);
+
+    return products
+})
+```
+
+> **Note:** In server we dont use `useFetch` we use `$fetch`
+
+##### `products.vue`
+
+```vue
+<script>
+// get products
+const { products } = await useFetch("/api/products?name=product");
+</script>
+```
+
+### GET By ID Request / Dynamic request
+
+##### `[id].js`
+
+> Dynamic routes parameter is fetched as a event context in nitro
+
+```js
+export default defineEventHanlder(e => {
+    // destructure route params
+    const { id } = event.context.params;
+
+    // data source
+    const { data : product } =  await $fetch(`https://<data-source-path>/products/${id}`);
+
+    return product;
+})
+```
+
+##### `[id].vue`
+
+> Dynamic routes parameter is fetched as a prop in vue
+
+```vue
+<script>
+// dynamic id
+defineProps({
+  id: Number,
+});
+
+const { product } = await useFetch(`/api/products/${id}`);
+</script>
+```
+
+### POST Request
+
+##### `products.vue`
+
+```vue
+<script>
+// create new product
+const { product } = await useFetch("/api/products", {
+  method: "post",
+  body: {
+    name: "Product 3",
+    img: "",
+  },
+});
+</script>
+```
+
+##### `products.js`
+
+```js
+export default defineEventHanlder((e) => {
+  // destructure post params
+  const { name, img } = useBody(e);
+
+  const product = new Product({ name, img });
+  products.push(product);
+
+  return product;
+});
+```
+
+## Environment Variables
+
+We can define environment variables in the `.env` file, and then declare them as a runtimeConfig in `nuxt.config.ts`.
+
+##### `.env`
+
+```env
+API_KEY=ek43pi53;lkdg0443po3i45kgdfslgj944040
+```
+
+##### `nuxt.config.ts`
+
+```ts
+{
+    ...
+    runtimeConfig: {
+        apiKey: process.env.API_KEY
+        public: {
+            // exposes keys to frontend
+        }
+    }
+    ...
+}
+```
+
+##### `products.js`
+
+```js
+export default defineEventHandler(async (e) => {
+  const { name } = useQuery(e);
+  const { apiKey } = useRuntimeConfig();
+
+  const uri = `https://<base-api-url>?apiKey=${product}&name=${name}`;
+  //...
+});
 ```
