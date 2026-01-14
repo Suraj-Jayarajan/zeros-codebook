@@ -3,7 +3,7 @@
 > - Built on top of vue
 > - Accuired by vercel
 > - Universal Rendering (SSR + CSR)
->   - Server Side Rendering (SSR) + Client Side Rendering (CSR)
+>   - Server Side Rendering (SSR) + Client Side Rendering (CSR) + Static Site Generation (SSG )
 >   - Better SEO Optimization
 >   - Faster browser loading time
 >   - Still gets all benifits of an SPA
@@ -30,41 +30,41 @@ npm run dev -- -o
 
 ```
 .
-|__ .nuxt/
-|__ layouts/
-|   |__ default.vue
-|
-|__ server/               // Nitro Routes
-|   |__ api/
-|       |__ products.js
-|       |__ [id].js
-|
-|__ pages/
-|   |__ index.vue         // Secondary Entry point, recommended as primary
-|   |__ about.vue
-|   |__ error.vue         // default error page
-|   |__ Products /
-|       |__ index.vue
-|       |__ product.vue
-|
-|__ components/
-|   |__ ProductCard.vue
-|
-|__ composables/
-|__ middleware/
-|__ plugins/
-|__ utils/
-|
-|__ app.vue               // Default Entry point, can be deleted
-|__ nuxt.config.ts
-|__ tsconfig.json
-|__ node_modules/
-|__ package.json
-|__ package-lock.json
-|__ package.json
-|__ README.md
-|__ .gitinore
+├─ .nuxt/                  # Build output (auto‑generated)
+├─ layouts/
+│ └─ default.vue           # Default layout
+│
+├─ pages/                  # File‑based routing
+│ ├─ index.vue             # Home page (/)
+│ ├─ about.vue             # /about
+│ ├─ error.vue             # Global error page
+│ └─ products/
+│ ├─ index.vue             # /products
+│ └─ [id].vue              # /products/:id
+│
+├─ server/                 # Nitro backend
+│ └─ api/
+│ ├─ products.ts
+│ └─ products/[id].ts
+│
+├─ components/             # Reusable Vue components
+│ └─ ProductCard.vue
+│
+├─ composables/            # Custom composables
+├─ middleware/             # Route middleware
+├─ plugins/                # Nuxt plugins
+├─ utils/                  # Utility functions
+│
+├─ app.vue                 # Root component (optional)
+├─ nuxt.config.ts
+├─ tsconfig.json
+├─ package.json
+├─ package-lock.json
+├─ README.md
+└─ .gitignore
 ```
+
+> Note: app.vue is optional. If removed, pages/index.vue becomes the entry point.
 
 ## nuxt.config.ts
 
@@ -383,9 +383,106 @@ export default defineEventHandler(async (e) => {
 });
 ```
 
+## useAsyncData / useAsyncFetch
 
+#### What is useAsyncData?
+
+- useAsyncData() is a core Nuxt composable for fetching async data
+- Designed specifically for SSR + CSR scenarios
+- Runs on:
+  - Server during SSR
+  - Client during navigation (if needed)
+- Supports caching, revalidation, and lazy loading
+
+> In practice, useFetch() is a thin wrapper around useAsyncData() that uses $fetch internally.
+
+#### Basic Syntax
+
+```js
+const { data, pending, error, refresh } = await useAsyncData("products", () => {
+  return $fetch("https://api.com/products");
+});
+```
+
+- `data` → resolved response (ref)
+- `pending` → loading state (boolean)
+- `error` → error state
+- `refresh()` → manually refetch
+
+#### Server-Side Rendering Behavior
+
+- On first page load:
+
+  - Data is fetched on the server
+  - Result is serialized and sent to the client
+  - No duplicate request on hydration
+
+- On client navigation:
+  - Data is fetched only if cache key changes
+  -
+
+#### Dynamic Params Example
+
+```js
+const route = useRoute();
+
+const { data: product } = await useAsyncData(`product-${route.params.id}`, () =>
+  $fetch(`/api/products/${route.params.id}`)
+);
+```
+
+> The key is critical for caching and avoiding stale data.
+
+#### Lazy Loading
+
+```js
+const { data, pending } = useAsyncData(
+  "products",
+  () => $fetch("/api/products"),
+  { lazy: true }
+);
+```
+
+> Data fetch happens after component is mounted
+
+> Useful for non-critical data
+
+#### Watching Reactive Dependencies
+
+```js
+const search = ref("");
+
+const { data } = useAsyncData(
+  "products",
+  () => $fetch(`/api/products?search=${search.value}`),
+  { watch: [search] }
+);
+```
+
+#### Error Handling
+
+```js
+const { data, error } = await useAsyncData("product", async () => {
+  const product = await $fetch("/api/products/1");
+
+  if (!product) {
+    throw createError({ statusCode: 404, statusMessage: "Not Found" });
+  }
+
+  return product;
+});
+```
+
+#### Rule of Thumb:
+
+- Use useFetch() for simple API calls
+- Use useAsyncData() when:
+  - You need custom logic
+  - Multiple async calls
+  - Conditional fetching
 
 ## TODO
+
 - Nuxt LifeCycle
 - useAsyncFetch
 - ORM and Connect to database
