@@ -28,6 +28,9 @@ npm run dev -- -o
 |__ .nuxt/
 |__ layouts/
 |   |__ default.vue
+|__ server               // server routes
+|   |__ api
+|      |__ <route-name>.js
 |
 |__ pages/
     |__ index.vue         // Secondary Entry point, recommended as primary
@@ -53,7 +56,7 @@ npm run dev -- -o
 
 ## nuxt.config.ts
 ```js
-export defailt defineNuxtConfig({
+export default defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss'],
     app: {
         head: {                                  // html head
@@ -126,7 +129,7 @@ const handleClearError = () => clearError({redirect: '/'})
 ```
 
 ## NuxtLink
-> Used instead of regular anchor tag/ router-link
+> Used instead of regular anchor tag / router-link
 
 ```vue
 <NuxtLink to="/products">Products</NuxtLink>
@@ -134,7 +137,7 @@ const handleClearError = () => clearError({redirect: '/'})
 ```
 
 ## Layouts
-> Default.vue is the default page
+> Default.vue is the default layout
 > Custom layouts needs to be configured in the folder index.vue
 ```
 .
@@ -218,3 +221,4 @@ useHead({
 </div>
 
 </template>
+```
