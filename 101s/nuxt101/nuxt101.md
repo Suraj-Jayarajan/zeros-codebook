@@ -50,6 +50,11 @@ npm run dev -- -o
 |__ components/
 |   |__ ProductCard.vue
 |
+|__ composables/
+|__ middleware/
+|__ plugins/
+|__ utils/
+|
 |__ app.vue               // Default Entry point, can be deleted
 |__ nuxt.config.ts
 |__ tsconfig.json
@@ -377,3 +382,13 @@ export default defineEventHandler(async (e) => {
   //...
 });
 ```
+
+
+
+## TODO
+- Nuxt LifeCycle
+- useAsyncFetch
+- ORM and Connect to database
+- middlewares
+- plugins
+- utils
