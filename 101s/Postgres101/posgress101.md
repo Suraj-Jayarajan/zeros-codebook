@@ -286,18 +286,30 @@ SELECT DISTINCT
     CONCAT(t.first_name, ' ', t.last_name) AS full_name,
     t.email,
     t.state,
-    SUM(o.amount) AS total_spent
+    SUM(o.amount) AS total_spent,
 FROM public.users AS t
 JOIN orders o ON t.id = o.user_id
-WHERE t.created_at BETWEEN TIMESTAMPTZ '2024-01-01' AND TIMESTAMPTZ '2024-12-31'
+WHERE t.created_at BETWEEN TIMESTAMPTZ '2024-01-01' AND
+TIMESTAMPTZ '2024-12-31'
   AND t.state IN ('CA', 'NY')
   AND t.email ILIKE '%@gmail.com'
   AND t.deleted_at IS NULL
+AND EXTRACT(MONTH FROM created_at) = 12                   -- December
 GROUP BY t.first_name, t.last_name, t.email, t.state
 HAVING SUM(o.amount) > 1000
 ORDER BY total_spent DESC, full_name ASC
 LIMIT 50 OFFSET 0;
 ```
+
+> NOTE:
+> Using EXTRACT in WHERE can prevent index usage
+> Prefer range filters when possible:
+>
+> ```sql
+> -- Better
+> WHERE created_at >= '2024-01-01'
+>  AND created_at < '2025-01-01'
+> ```
 
 ---
 
@@ -308,6 +320,32 @@ LIMIT 50 OFFSET 0;
 - Set: `IN`, `BETWEEN`
 - Pattern: `LIKE`, `ILIKE`
 - NULL check: `IS NULL`, `IS NOT NULL`
+
+
+## GROUP BY, HAVING & ORDER BY Rules
+
+### GROUP BY Rules
+
+- All non-aggregated columns in SELECT must appear in GROUP BY
+- GROUP BY happens before HAVING
+
+### HAVING Rules
+
+- Filters aggregated results
+- Cannot be replaced by WHERE
+
+### ORDER BY Rules
+
+- Executed last
+- Can use column aliases
+
+```sql
+SELECT supplier, COUNT(*) AS total
+FROM products
+GROUP BY supplier
+HAVING COUNT(*) > 5
+ORDER BY total DESC;
+```
 
 ---
 
@@ -451,30 +489,180 @@ A category of joins that includes:
 - `OUTER` keyword is optional
 - INNER JOIN is **not** an outer join
 
-## GROUP BY, HAVING & ORDER BY Rules
+> ### Note:
+>
+> Joins can be written using WHERE, but it’s outdated (old style Join) and discouraged.
+> Best practice is to use explicit JOIN … ON syntax for clarity, correctness, and support of outer joins and adhers to ANSI Standard.
+>
+> ```sql
+> SELECT *
+> FROM customers c, orders o
+> WHERE c.id = o.customer_id;
+> ```
 
-### GROUP BY Rules
+---
 
-- All non-aggregated columns in SELECT must appear in GROUP BY
-- GROUP BY happens before HAVING
+## UNION, UNION ALL, INTERSECT, EXCEPT (Set Operators)
 
-### HAVING Rules
+### UNION
 
-- Filters aggregated results
-- Cannot be replaced by WHERE
-
-### ORDER BY Rules
-
-- Executed last
-- Can use column aliases
+**Definition**
+Combines results of two or more SELECT queries and **removes duplicate rows**.
 
 ```sql
-SELECT supplier, COUNT(*) AS total
-FROM products
-GROUP BY supplier
-HAVING COUNT(*) > 5
-ORDER BY total DESC;
+SELECT email FROM customers
+UNION
+SELECT email FROM suppliers;
 ```
+
+**When to Use**
+
+- When combining similar datasets
+- When duplicates must be eliminated
+
+**Key Points**
+
+- Duplicate rows are removed (uses sort/hash internally)
+- Columns must match in:
+  - Number
+  - Order
+  - Compatible data types
+
+- Slower than `UNION ALL` due to deduplication
+
+---
+
+### UNION ALL
+
+**Definition**
+Combines results of multiple SELECT queries **without removing duplicates**.
+
+```sql
+SELECT email FROM customers
+UNION ALL
+SELECT email FROM suppliers;
+```
+
+**When to Use**
+
+- When you know data is already unique
+- When performance matters
+
+**Key Points**
+
+- Faster than UNION
+- Most commonly recommended unless deduplication is required
+- Keeps duplicates
+
+---
+
+### INTERSECT
+
+**Definition**
+Returns **only rows that exist in both result sets**.
+
+```sql
+SELECT email FROM customers
+INTERSECT
+SELECT email FROM newsletter_users;
+```
+
+**When to Use**
+
+- Finding common records between datasets
+- Matching users across systems
+
+**Key Points**
+
+- Similar to INNER JOIN on all selected columns
+- Removes duplicates automatically
+
+---
+
+### EXCEPT (MINUS)
+
+**Definition**
+Returns rows from the first query that **do not exist in the second query**.
+
+```sql
+SELECT email FROM customers
+EXCEPT
+SELECT email FROM unsubscribed_users;
+```
+
+**When to Use**
+
+- Finding missing or unmatched records
+- Data reconciliation
+
+**Key Points**
+
+- Order matters (`A EXCEPT B ≠ B EXCEPT A`)
+- Removes duplicates automatically
+
+---
+
+### Rules for Set Operators (Very Important)
+
+- Each SELECT must return:
+  - Same number of columns
+  - Same column order
+  - Compatible data types
+
+- Column names come from the **first SELECT**
+- `ORDER BY` is allowed **only once at the end**
+
+```sql
+SELECT email FROM customers
+UNION ALL
+SELECT email FROM suppliers
+ORDER BY email;
+```
+
+---
+
+### UNION vs JOIN (Common Interview Question)
+
+| Aspect      | UNION            | JOIN                    |
+| ----------- | ---------------- | ----------------------- |
+| Combines    | Rows             | Columns                 |
+| Use case    | Similar datasets | Related tables          |
+| Result size | Sum of rows      | Depends on relationship |
+
+---
+
+### Common Interview Traps
+
+#### Trap 1: Using UNION instead of UNION ALL
+
+- UNION adds unnecessary overhead
+- Prefer UNION ALL unless deduplication is required
+
+#### Trap 2: ORDER BY in individual SELECTs
+
+```sql
+-- ❌ Invalid
+SELECT email FROM customers ORDER BY email
+UNION
+SELECT email FROM suppliers;
+```
+
+#### Trap 3: Mismatched column types
+
+```sql
+SELECT id FROM table1
+UNION
+SELECT name FROM table2; -- type mismatch
+```
+
+---
+
+### One-Line Interview Answers
+
+- **UNION** → combines results and removes duplicates
+- **UNION ALL** → combines results, keeps duplicates (faster)
+- **INTERSECT** → common rows only
+- **EXCEPT** → rows in first query but not in second
 
 ---
 
@@ -522,7 +710,6 @@ Used to understand query plans and performance bottlenecks
 - Understand DELETE vs TRUNCATE
 - Be able to explain MVCC at a high level
 - Use `EXPLAIN ANALYZE` before optimizing queries
-
 
 ### 1. General SQL Traps (Very Common)
 
