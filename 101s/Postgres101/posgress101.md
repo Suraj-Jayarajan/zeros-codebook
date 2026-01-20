@@ -313,29 +313,109 @@ LIMIT 50 OFFSET 0;
 
 ## Joins
 
-### INNER JOIN
+### INNER JOIN (JOIN)
+
+**Definition**
+Returns only rows that have matching values in **both** tables.
 
 ```sql
 SELECT *
-FROM item
-INNER JOIN sales_item ON item.id = sales_item.item_id;
+FROM orders o
+JOIN customers c ON o.customer_id = c.id;
 ```
 
-### LEFT JOIN
+**When to Use**
+
+- When you only care about records that exist in both tables
+- Most common join in day-to-day queries
+
+**Key / Interview Points**
+
+- `JOIN` is shorthand for `INNER JOIN`
+- Non-matching rows from both tables are excluded
+- Think of it as an **intersection**
+
+---
+
+### LEFT JOIN (LEFT OUTER JOIN)
+
+**Definition**
+Returns **all rows from the left table** and matching rows from the right table.
+Unmatched right-side columns are `NULL`.
 
 ```sql
 SELECT *
-FROM item
-LEFT JOIN sales_item ON item.id = sales_item.item_id;
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id;
 ```
 
-### RIGHT JOIN
+**When to Use**
 
-(Generally avoid — can be rewritten as LEFT JOIN)
+- When the left table is the main dataset
+- To find rows **without matches** in the right table
+- Common in reporting and analytics
+
+**Key / Interview Points**
+
+- Filtering in `WHERE` can turn it into an INNER JOIN
+- Use `ON` clause carefully
+- Very commonly asked join type in interviews
+
+---
+
+### RIGHT JOIN (RIGHT OUTER JOIN)
+
+**Definition**
+Returns **all rows from the right table** and matching rows from the left table.
+
+```sql
+SELECT *
+FROM customers c
+RIGHT JOIN orders o ON c.id = o.customer_id;
+```
+
+**When to Use**
+
+- Rarely used
+- Can always be rewritten as a LEFT JOIN by swapping tables
+
+**Key / Interview Points**
+
+- Generally avoided for readability
+- Interviewers prefer LEFT JOIN over RIGHT JOIN
+
+---
+
+### FULL JOIN (FULL OUTER JOIN)
+
+**Definition**
+Returns **all matching rows plus all non-matching rows from both tables**.
+Unmatched columns are filled with `NULL`.
+
+```sql
+SELECT *
+FROM customers c
+FULL JOIN orders o ON c.id = o.customer_id;
+```
+
+**When to Use**
+
+- Data reconciliation
+- Auditing and consistency checks
+- Finding missing relationships on both sides
+
+**Key / Interview Points**
+
+- Combines LEFT JOIN and RIGHT JOIN behavior
+- Not supported in some databases, but supported in PostgreSQL
+- Can be simulated using `UNION` if unavailable
+
+---
 
 ### CROSS JOIN
 
-Produces a Cartesian product
+**Definition**
+Returns the **Cartesian product** of two tables (every row from A × every row from B).
 
 ```sql
 SELECT *
@@ -343,7 +423,33 @@ FROM colors
 CROSS JOIN sizes;
 ```
 
+**When to Use**
+
+- Generating combinations
+- Time series expansion
+- Test data generation
+
+**Key / Interview Points**
+
+- No join condition
+- Row count = rows(A) × rows(B)
+- Dangerous if used unintentionally (performance risk)
+
 ---
+
+### OUTER JOIN (Concept)
+
+**Definition**
+A category of joins that includes:
+
+- LEFT OUTER JOIN
+- RIGHT OUTER JOIN
+- FULL OUTER JOIN
+
+**Key / Interview Points**
+
+- `OUTER` keyword is optional
+- INNER JOIN is **not** an outer join
 
 ## GROUP BY, HAVING & ORDER BY Rules
 
