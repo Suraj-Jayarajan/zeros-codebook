@@ -513,10 +513,249 @@ Used to understand query plans and performance bottlenecks
 
 ---
 
-## Interview Tips
+## Interview Questions, Traps & Gotchas
+
+### Interview Tips
 
 - Use `NUMERIC` for money, not floats
 - Always index columns used in joins and filters
 - Understand DELETE vs TRUNCATE
 - Be able to explain MVCC at a high level
 - Use `EXPLAIN ANALYZE` before optimizing queries
+
+
+### 1. General SQL Traps (Very Common)
+
+#### Q: Difference between `WHERE` and `HAVING`?
+
+**Answer**
+
+- `WHERE` filters rows **before aggregation**
+- `HAVING` filters results **after aggregation**
+
+```sql
+-- Wrong
+SELECT dept, COUNT(*)
+FROM employees
+WHERE COUNT(*) > 5;
+
+-- Correct
+SELECT dept, COUNT(*)
+FROM employees
+GROUP BY dept
+HAVING COUNT(*) > 5;
+```
+
+**Trap**
+
+- Interviewers expect you to know execution order
+
+---
+
+#### Q: `COUNT(*)` vs `COUNT(column)`?
+
+**Answer**
+
+- `COUNT(*)` → counts all rows
+- `COUNT(column)` → ignores `NULL`
+
+```sql
+COUNT(*)        -- includes NULLs
+COUNT(email)    -- excludes NULL emails
+```
+
+---
+
+#### Q: Why `NUMERIC` instead of `FLOAT` for money?
+
+**Answer**
+
+- `FLOAT` is approximate
+- `NUMERIC` is exact and avoids rounding errors
+
+---
+
+### 2. JOIN Traps (Extremely Important)
+
+#### Trap 1: LEFT JOIN turning into INNER JOIN
+
+```sql
+SELECT *
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+WHERE o.status = 'PAID';
+```
+
+**Problem**
+
+- `WHERE` filters out `NULL`s
+- Effectively becomes an INNER JOIN
+
+**Correct**
+
+```sql
+SELECT *
+FROM customers c
+LEFT JOIN orders o
+  ON c.id = o.customer_id AND o.status = 'PAID';
+```
+
+**Interview Tip**
+
+> Filters on the right table of a LEFT JOIN should go in the ON clause.
+
+---
+
+#### Trap 2: Filtering NULLs incorrectly
+
+```sql
+-- Wrong
+WHERE deleted_at = NULL;
+
+-- Correct
+WHERE deleted_at IS NULL;
+```
+
+---
+
+#### Trap 3: Duplicate rows after JOIN
+
+```sql
+SELECT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id;
+```
+
+**Issue**
+
+- One-to-many joins create duplicate customer rows
+
+**Fix**
+
+```sql
+SELECT DISTINCT c.id, c.name
+FROM customers c
+JOIN orders o ON c.id = o.customer_id;
+```
+
+or use aggregation.
+
+---
+
+#### Trap 4: JOIN vs EXISTS
+
+```sql
+-- JOIN
+SELECT DISTINCT c.*
+FROM customers c
+JOIN orders o ON c.id = o.customer_id;
+
+-- EXISTS (often better)
+SELECT *
+FROM customers c
+WHERE EXISTS (
+  SELECT 1 FROM orders o WHERE o.customer_id = c.id
+);
+```
+
+**Interview Insight**
+
+- `EXISTS` avoids row multiplication
+- Often more efficient for existence checks
+
+---
+
+### 3. GROUP BY Traps
+
+#### Trap: Selecting non-grouped columns
+
+```sql
+-- Invalid
+SELECT dept, salary
+FROM employees
+GROUP BY dept;
+```
+
+**Rule**
+
+- Every selected column must be aggregated or included in `GROUP BY`
+
+---
+
+### 4. ORDER BY Traps
+
+#### Q: Can ORDER BY use aliases?
+
+**Answer**
+
+- Yes, ORDER BY is evaluated last
+
+```sql
+SELECT price * qty AS total
+FROM sales
+ORDER BY total DESC;
+```
+
+---
+
+### 5. FULL JOIN Traps
+
+#### Q: How to find unmatched rows on both sides?
+
+```sql
+SELECT *
+FROM a
+FULL JOIN b ON a.id = b.id
+WHERE a.id IS NULL OR b.id IS NULL;
+```
+
+**Use Case**
+
+- Data reconciliation
+- Auditing missing relationships
+
+---
+
+### 6. TRUNCATE vs DELETE Traps
+
+| Feature       | DELETE | TRUNCATE           |
+| ------------- | ------ | ------------------ |
+| Transactional | Yes    | Mostly No          |
+| WHERE clause  | Yes    | No                 |
+| Resets ID     | No     | Yes (with RESTART) |
+| Speed         | Slow   | Fast               |
+
+**Interview Tip**
+
+- `TRUNCATE CASCADE` affects dependent tables
+
+---
+
+### 7. PostgreSQL-Specific Interview Questions
+
+#### Q: What is MVCC?
+
+**Answer**
+
+- PostgreSQL uses row versions
+- Readers don’t block writers
+- Writers don’t block readers
+
+---
+
+#### Q: Difference between JSON and JSONB?
+
+**Answer**
+
+- `JSON` stores text
+- `JSONB` stores binary, faster queries, supports indexing
+
+---
+
+### 8. One-Line Rapid-Fire Interview Answers
+
+- `JOIN` = `INNER JOIN`
+- OUTER JOIN = LEFT + RIGHT + FULL
+- Use `EXISTS` to avoid duplicate rows
+- LEFT JOIN + WHERE = common trap
+- Always `EXPLAIN ANALYZE` slow queries
