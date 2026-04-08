@@ -121,3 +121,22 @@ class Listing extends Model
     }
 }
 ```
+
+## Controllers
+> located in `app/Http/Controllers` folder
+
+```bash
+php artisan make:controller ListingController
+```
+
+
+
+## To learn
+ 1. Request Lifecycle
+ 2. Service Container
+ 3. Service Providers
+ 4. Facades
+ 5. Routing
+ 6. Middleware
+ 7. CSRF Protection
+ 

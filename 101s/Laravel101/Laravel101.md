@@ -1,5 +1,19 @@
 # Laravel 101
 
+> In windows use XAMPP and create virtual host for your project. In Linux use LAMP and create virtual host for your project.
+
+## Install composer
+
+> Windows: https://getcomposer.org/download/
+
+> Linux: sudo apt install composer
+
+## Create Laravel project
+
+```bash
+laravel new .
+```
+
 ## Introduction
 
 - PHP framework following MVC (Model-View-Controller)
@@ -75,6 +89,10 @@ project-root/
 ## Models
 
 - Located in `app/Models`
+
+```bash
+php artisan make:model Listing
+```
 
 ```php
 class EqCustomer extends Model  {
@@ -335,6 +353,10 @@ class EqCustomer extends Model  {
 
 - Located in `app/Http/Controllers`
 
+```bash
+php artisan make:controller ListingController
+```
+
 ```php
 class CustomersController extends Controller
 {
@@ -397,7 +419,11 @@ class CustomersController extends Controller
 
 ## Routes
 
-- Defined in `routes/web.php` (for web) and `routes/api.php` (for API)
+> Open `routes` folder
+
+1. `web.php` - for web routes
+2. `api.php` - for api routes
+3. `console.php` - for console commands
 
 ### Style 1: Closure-based routes
 
@@ -456,6 +482,44 @@ function () {
      Route::any('/search', 'CustomersController@searchCustomers')
         ->name('vh.backend.hrc.customers.search');
      //---------------------------------------------------------
+});
+```
+
+### For View Routes
+
+```php
+Route::get('/', function () {
+    return view('welcome');
+});
+```
+
+```php
+Route::get('/hello', function () {
+    return 'Hello World';
+});
+```
+
+```php
+Route::get('/user/{id}', function ($id) {
+    return response('<h1>Hello World</h1>')
+        ->header('Content-Type', 'text/html')
+        ->header('X-Custom-Header', 'Custom Value');
+})->where('id', '[0-9]+')
+->name('user.show');
+```
+
+#### Passing data to views
+
+```php
+Route::get('/', function () {
+    return view('listings', [
+        'heading' => 'Latest Listings',
+        'listings' => [
+            ['id' => 1, 'title' => 'Listing One'],
+            ['id' => 2, 'title' => 'Listing Two'],
+            ['id' => 3, 'title' => 'Listing Three'],
+        ]
+    ]);
 });
 ```
 
@@ -620,3 +684,259 @@ Response sent to Browser
 ```
 
 ![Request Lifecycle](/laravel-request-lifecycle.png)
+
+## Service Providers
+
+- Located in `app/Providers`
+  
+Service Providers are used to:
+- Register services into the container
+- Configure application components
+
+
+Example:
+
+```php
+<?php namespace VaahCms\Modules\HRC\Providers;
+
+
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory;
+use VaahCms\Modules\HRC\Http\Middleware\HasHRCModuleAccess;
+use VaahCms\Modules\HRC\Providers\RouteServiceProvider;
+use VaahCms\Modules\HRC\Providers\EventServiceProvider;
+
+class HRCServiceProvider extends ServiceProvider
+{
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
+    /**
+     * Boot the application events.
+     *
+     * @return void
+     */
+    public function boot(Router $router)
+    {
+
+        $this->registerMiddleware($router);
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->registerAssets();
+        //$this->registerFactories();
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->registerSeeders();
+        $this->registerBladeDirectives();
+        $this->registerBladeComponents();
+    }
+
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+
+        $this->app->register(RouteServiceProvider::class);
+        $this->app->register(EventServiceProvider::class);
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+
+        $this->registerHelpers();
+        $this->registerLibraries();
+
+    }
+
+    /**
+     *
+     */
+    private function registerMiddleware($router) {
+
+        //register middleware
+        $router->aliasMiddleware('has.hrc.module.access', HasHRCModuleAccess::class);
+
+    }
+
+    /**
+     *
+     */
+    private function registerHelpers() {
+
+        //load all the helpers
+        foreach (glob(__DIR__.'/../Helpers/*.php') as $filename){
+            require_once($filename);
+        }
+
+    }
+
+    /**
+     *
+     */
+    private function registerLibraries()
+    {
+        //load all the helpers
+        foreach (glob(__DIR__.'/Libraries/*.php') as $filename){
+            require_once($filename);
+        }
+    }
+
+
+    /**
+     *
+     */
+    private function registerSeeders() {
+
+        //load all the seeds
+        foreach (glob(__DIR__.'/../Database/Seeds/*.php') as $filename){
+            require_once($filename);
+        }
+
+    }
+
+    /**
+     * Register config.
+     *
+     * @return void
+     */
+    protected function registerConfig()
+    {
+        $this->publishes([
+            __DIR__.'/../Config/config.php' => config_path('hrc.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            __DIR__.'/../Config/config.php', 'hrc'
+        );
+    }
+
+    /**
+     * Register views.
+     *
+     * @return void
+     */
+    public function registerViews()
+    {
+        $viewPath = resource_path('/views/vaahcms/modules/hrc');
+
+        $sourcePath = __DIR__.'/../Resources/views';
+
+        $this->publishes([
+            $sourcePath => $viewPath
+        ],'views');
+
+        $this->loadViewsFrom(array_merge(array_map(function ($path) {
+            return $path . '/views/vaahcms/modules/hrc';
+        }, \Config::get('view.paths')), [$sourcePath]), 'hrc');
+
+    }
+
+    /**
+     * Register views.
+     *
+     * @return void
+     */
+    public function registerAssets()
+    {
+
+        $sourcePath = __DIR__.'/../Resources/assets';
+
+        $desPath = public_path('vaahcms/modules/hrc/assets');
+
+        $this->publishes([
+            $sourcePath => $desPath
+        ],'assets');
+
+
+    }
+
+
+    /**
+     * Register translations.
+     *
+     * @return void
+     */
+    public function registerTranslations()
+    {
+        $langPath = resource_path('/lang/vaahcms/modules/hrc');
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, 'hrc');
+        } else {
+            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'hrc');
+        }
+    }
+
+    /**
+     * Register an additional directory of factories.
+     *
+     * @return void
+     */
+    public function registerFactories()
+    {
+        if (! app()->environment('production')) {
+            app(Factory::class)->load(__DIR__ . '/../Database/factories');
+        }
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [];
+    }
+
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function registerBladeDirectives()
+    {
+
+        /*
+        \Blade::directive('hello', function ($expression) {
+            return "<?php echo 'Hello ' . {$expression}; ?>";
+        });
+        */
+
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function registerBladeComponents()
+    {
+
+        /*
+        \Blade::component('example', Example::class);
+        */
+
+    }
+
+}
+```
+
+> **NOTE:** Service Containers are a bit adavanced Dependency Injection in laravel.
+> ```php
+> class UserController extends Controller
+> {
+>    protected $service;
+>
+>    public function __construct(UserService $service)
+>    {
+>        $this->service = $service;
+>    }
+> }
+```
