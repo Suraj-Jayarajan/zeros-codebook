@@ -688,11 +688,11 @@ Response sent to Browser
 ## Service Providers
 
 - Located in `app/Providers`
-  
+
 Service Providers are used to:
+
 - Register services into the container
 - Configure application components
-
 
 Example:
 
@@ -929,6 +929,7 @@ class HRCServiceProvider extends ServiceProvider
 ```
 
 > **NOTE:** Service Containers are a bit adavanced Dependency Injection in laravel.
+>
 > ```php
 > class UserController extends Controller
 > {
@@ -939,4 +940,334 @@ class HRCServiceProvider extends ServiceProvider
 >        $this->service = $service;
 >    }
 > }
+> ```
+
+## Elequent ORM
+
+Eloquent is Laravel’s Active Record ORM, where:
+
+- Each `Model` ↔ `Table`
+- Each `Object` ↔ `Row`
+- Each `Property` ↔ `Column`
+
+### Core Concepts
+
+#### Model Basics
+
+```php
+class User extends Model
+{
+    protected $table = 'users'; // optional
+    protected $fillable = ['name', 'email'];
+    protected $hidden = ['password'];
+}
 ```
+
+#### Mass Assignment
+
+```
+User::create([
+    'name' => 'Suraj',
+    'email' => 'suraj@example.com'
+]);
+```
+
+> Requires `$fillable` or `$guarded`
+
+### Modern Laravel (PHP Attributes)
+
+```php
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
+
+#[Table('my_flights', key: 'flight_id')]
+#[Fillable(['name', 'email', 'options->enabled'])] // `options` is a JSON column
+class Flight extends Model
+{
+    use HasUuids;
+}
+```
+
+> Requires PHP 8.0+ and Laravel 10.0+
+
+> Other Attrubutes:
+>
+> - `#[Guarded]`
+> - `#[Hidden]`
+> - `#[Casts]`
+> - `#[Appends]`
+> - `#[WithoutTimestamps]`
+> - `#[DateFormat('U')]`
+
+## Query Builder
+
+Laravel Query Builder provides a fluent, SQL-like interface to interact with the database without using Eloquent models.
+
+### Get All
+
+```php
+$flights = Flight::all();
+```
+
+### Get Limited
+
+```php
+$flights = Flight::where('active', 1)
+    ->orderBy('name')
+    ->limit(10)
+    ->get();
+```
+
+### Select
+
+```php
+DB::table('users')->select('id', 'name')->get();
+DB::table('users')->selectRaw('COUNT(*) as count')->get();
+DB::table('users')->distinct()->get();
+```
+
+### Where Clauses
+
+#### Basic
+
+```php
+->where('id', 1)
+->where('status', '=', 'active')
+```
+
+#### Multiple
+
+```php
+->where([
+    ['status', '=', 'active'],
+    ['age', '>', 18],
+])
+```
+
+#### OR
+
+```php
+->orWhere('status', 'inactive')
+```
+
+#### Advanced
+
+```php
+->whereBetween('age', [18, 30])
+->whereNotBetween('age', [18, 30])
+
+->whereIn('id', [1,2,3])
+->whereNotIn('id', [1,2])
+
+->whereNull('deleted_at')
+->whereNotNull('email')
+
+->whereDate('created_at', '2024-01-01')
+->whereMonth('created_at', 1)
+->whereYear('created_at', 2024)
+->whereTime('created_at', '12:00:00')
+
+->whereColumn('updated_at', '>', 'created_at')
+
+->whereExists(function ($q) {
+    $q->select(DB::raw(1))
+      ->from('orders')
+      ->whereColumn('orders.user_id', 'users.id');
+})
+```
+
+### Joins
+
+```php
+->join('posts', 'users.id', '=', 'posts.user_id')
+->leftJoin('posts', 'users.id', '=', 'posts.user_id')
+->rightJoin('posts', 'users.id', '=', 'posts.user_id')
+->crossJoin('roles')
+```
+
+#### Join with conditions
+
+```php
+->join('posts', function ($join) {
+    $join->on('users.id', '=', 'posts.user_id')
+         ->where('posts.active', 1);
+});
+```
+
+### Ordering & Grouping
+
+```php
+->orderBy('name', 'asc')
+->orderByDesc('created_at')
+
+->groupBy('status')
+->having('count', '>', 10)
+->havingRaw('COUNT(*) > 10')
+```
+
+### Limit & Offset
+
+```php
+->limit(10)
+->offset(20)
+
+// shortcut
+->skip(20)->take(10)
+```
+
+### Aggregates
+
+```php
+->count()
+->max('price')
+->min('price')
+->avg('price')
+->sum('price')
+```
+
+### Insert
+
+```php
+DB::table('users')->insert([
+    'name' => 'Suraj',
+    'email' => 'test@example.com'
+]);
+```
+
+#### Insert Multiple
+
+```php
+->insert([
+    ['name' => 'A'],
+    ['name' => 'B']
+]);
+```
+
+#### Insert & Get ID
+
+```php
+->insertGetId([...]);
+```
+
+### Update
+
+```php
+->where('id', 1)->update([
+    'name' => 'Updated'
+]);
+```
+
+### Increment / Decrement
+
+```php
+->increment('votes')
+->increment('votes', 5)
+
+->decrement('votes')
+```
+
+### Delete
+
+```php
+->delete()
+->where('id', 1)->delete()
+```
+
+### Upserts
+
+```php
+DB::table('users')->upsert(
+    [
+        ['email' => 'a@test.com', 'name' => 'A'],
+    ],
+    ['email'], // unique key
+    ['name']   // fields to update
+);
+```
+
+### Advanced Query Methods
+
+#### Raw Expressions
+
+```php
+DB::raw('COUNT(*) as count')
+
+->selectRaw('price * ? as price_with_tax', [1.2])
+->whereRaw('price > IF(state = "TX", ?, 100)', [200])
+->orderByRaw('updated_at - created_at DESC')
+```
+
+#### Subqueries
+
+```php
+->selectSub(function ($q) {
+    $q->select('name')
+      ->from('roles')
+      ->whereColumn('roles.id', 'users.role_id')
+      ->limit(1);
+}, 'role_name')
+```
+
+#### Conditional Queries
+
+```php
+->when($active, fn($q) => $q->where('active', 1))
+```
+
+#### Chunking
+
+```php
+DB::table('users')->chunk(100, function ($users) {
+    //
+});
+```
+
+#### Cursor (Memory Efficient)
+
+```php
+foreach (DB::table('users')->cursor() as $user) {
+    //
+}
+```
+
+#### Lazy Collections
+
+```php
+DB::table('users')->lazy();
+```
+
+### Retrieval Methods
+
+```php
+->get()        // Collection
+->first()      // Single row
+->firstOrFail()
+->value('name') // single column
+->pluck('name') // array/collection
+->exists()
+->doesntExist()
+```
+
+### Transactions
+
+```php
+DB::transaction(function () {
+    DB::table('users')->update([...]);
+});
+```
+
+### Debugging
+
+```php
+->toSql()
+->dump()
+->dd()
+```
+
+### Performance Tips
+
+- Use `select()` instead of `*`
+- Use indexes on filtered columns
+- Use `chunk()` for large datasets
+- Prefer Query Builder for **heavy queries**
