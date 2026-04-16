@@ -1271,3 +1271,27 @@ DB::transaction(function () {
 - Use indexes on filtered columns
 - Use `chunk()` for large datasets
 - Prefer Query Builder for **heavy queries**
+
+
+## Laravel Collections
+A Collection is a fluent, chainable wrapper over arrays.
+
+- Returned by:
+    - Eloquent → Model::get()
+    - Query Builder → DB::table()->get()
+    - Custom → collect([...])
+- Supports functional programming (map, filter, reduce)
+
+### Creating Collections
+
+```php
+collect([1, 2, 3]);
+
+Collection::make([1, 2, 3]);
+
+collect(range(1, 10));
+```
+
+### Common Methods
+
+```php
