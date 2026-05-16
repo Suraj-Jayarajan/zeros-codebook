@@ -222,3 +222,66 @@ fruits.sort()  # Sort the list in place
 fruits.reverse()  # Reverse the order of the list in place
 len(fruits)  # Return the number of items in the list
 ```
+
+## Functions
+
+```python
+count = 0
+def fnName(a: int | 0, b: str | None, c:list=[]) -> bool:
+    """
+    Docstring: Describe the function's purpose and usage.
+    """
+    global count
+
+    count += 1
+    return a, b, c
+
+intRes, stringRes, listRes = fnName(1, '2')  # Using default value for param3
+intRes, stringRes, listRes = fnName(c=list[2,2], a=1, b="dfsd")  # Using keyword arguments
+
+
+def total(*numbers):
+    print(numbers)   # Tuple
+    return sum(numbers)
+
+print(total(1, 2, 3, 4))  # Output: 10
+
+
+def user_info(**data):
+    print(data)  # Dictionary
+
+user_info(name="Alice", age=30)
+
+
+```
+
+### Lambda Functions
+
+```python
+add = lambda x, y: x + y
+print(add(2, 3))  # Output: 5
+```
+### Recursion
+
+```python
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+print(factorial(5))  # Output: 120
+```
+
+### Generator Functions
+> Generators produce values one at a time instead of storing everything in memory.
+
+```python
+def count_up_to(n):
+    count = 1
+    while count <= n:
+        yield count  # Yield the current count and pause the function
+        count += 1
+
+for number in count_up_to(5):
+    print(number)  # Output: 1, 2, 3, 4, 5
+```
