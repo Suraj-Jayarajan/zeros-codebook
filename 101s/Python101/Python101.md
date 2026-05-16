@@ -285,3 +285,17 @@ def count_up_to(n):
 for number in count_up_to(5):
     print(number)  # Output: 1, 2, 3, 4, 5
 ```
+
+### Special Parameters
+
+```python
+def fn(a, b, /, c, d, *, e, f):
+    print(a, b, c, d, e, f)
+
+fn(1, 2, 3, 4, e=5, f=6)    
+```
+
+| Symbol | Name                       | Meaning                    |
+| ------ | -------------------------- | -------------------------- |
+| `/`    | Positional-only parameters | Parameters before / must be passed by position. |
+| `*`    | Keyword-only parameters    | Parameters after * must be passed by keyword. |
