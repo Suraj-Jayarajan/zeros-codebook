@@ -326,7 +326,7 @@ class ClassName(Parent1, Parent2):
         self.__private_variable = p7                 # private instance variable (Name mangling, not truly private but less accessible)
 
     @property
-    def private_variable(self):                      # Getter
+    def private_variable(self) :                     # Getter
         return self.__private_variable
 
     @private_variable.setter
@@ -334,24 +334,24 @@ class ClassName(Parent1, Parent2):
         self.__private_variable = value
 
 
-    def instance_method(self, arg1, arg2 = 0):
+    def instance_method(self, arg1, arg2 = 0): -> None:
         pass
 
 
-    def _instance_method_protected(self, arg1, arg2 = 0):
+    def _instance_method_protected(self, arg1, arg2 = 0):  -> None:
         pass
 
 
-    def __instance_method_private(self, arg1, arg2 = 0):
+    def __instance_method_private(self, arg1, arg2 = 0):  -> None:
         pass
 
 
     @staticmethod
-    def static_method(arg1, arg2 = 0):              # To perform utility functions
+    def static_method(arg1, arg2 = 0): -> int          # To perform utility functions
         return arg1 + arg2
 
     @classmethod
-    def class_method(cls):                          # Can access class variables and modify class state
+    def class_method(cls): -> str                  # Can access class variables and modify class state
         return cls.class_variable
 
 
@@ -371,6 +371,7 @@ print(ClassName.static_method(10, 20))  # Calling static method
 ```
 
 #### Notes
+
 - In Python, there is no strict enforcement of access modifiers (public, protected, private). The conventions are based on naming:
   - Public: No underscore (e.g., `instance_variable`)
   - Protected: Single underscore (e.g., `_protected_variable`) - This is a convention to indicate the programmer should not access this variable directly, but it is still accessible from outside the class.
@@ -398,10 +399,10 @@ print(ClassName.static_method(10, 20))  # Calling static method
 13. `__gt__(self, other)`: Defines behavior for the greater-than operator `>`.
 14. `__add__(self, other)`: Defines behavior for the addition operator `+`.
 15. `__sub__(self, other)`: Defines behavior for the subtraction operator `-`.
-16. `__mul__(self, other)`: Defines behavior for the multiplication operator `*
+16. `__mul__(self, other)`: Defines behavior for the multiplication operator `\*
 17. `__truediv__(self, other)`: Defines behavior for the division operator `/`.
 18. `__floordiv__(self, other)`: Defines behavior for the floor division operator `//`.
-19. `__mod__(self, other)`: Defines behavior for the modulus operator `%`.  
+19. `__mod__(self, other)`: Defines behavior for the modulus operator `%`.
 20. `__pow__(self, other)`: Defines behavior for the exponentiation operator `**`.
 21. `__enter__(self)`: Defines behavior for entering a context (used with `with` statements).
 22. `__exit__(self, exc_type, exc_value, traceback)`: Defines behavior for exiting a context (used with `with` statements).
@@ -415,8 +416,8 @@ class MyClass:
         return f"MyClass with value: {self.value}"
 
     def __repr__(self):
-        return f"MyClass({self.value})" 
-    
+        return f"MyClass({self.value})"
+
     def __enter__(self):
         print("Entering context")
         return self
@@ -424,13 +425,12 @@ class MyClass:
     def __exit__(self, exc_type, exc_value, traceback):
         print("Exiting context")
         return self
-    
+
     def __add__(self, other):
         if isinstance(other, MyClass):
             return MyClass(self.value + other.value)
         return NotImplemented
 ```
-
 
 ### Data Classes (Python 3.7+)
 
@@ -440,9 +440,9 @@ from dataclasses import dataclass
 @dataclass
 class Product:
     name: str
-    price: float  
+    price: float
 
-product1 = Product("Laptop", 999.99)  
+product1 = Product("Laptop", 999.99)
 product2 = Product("Smartphone", 499.99)
 ```
 
@@ -457,5 +457,131 @@ class Config:
 
 config = Config()
 print(config.APP_NAME)  # Output: MyApplication
-config.APP_NAME = "NewName"  # This will raise a FrozenInstanceError    
+config.APP_NAME = "NewName"  # This will raise a FrozenInstanceError
 ```
+
+### OOPS
+
+#### Encapsulation
+
+- Enforced by private and protected variables, methods using setters and getters, and by using properties to control access to instance variables.
+
+#### Abstraction
+
+- Methods with SOLID principles, hiding internal implementation details and exposing only necessary interfaces to the user.
+
+#### Inheritance
+
+- Supported through class inheritance, allowing a new class (child) to inherit attributes and methods from an existing class (parent).
+
+#### Polymorphism
+
+- Achieved through method overriding, where a child class can provide a specific implementation of a method that is already defined in its parent class. This allows for dynamic method resolution at runtime, enabling different behaviors based on the object type.
+
+### Abstract Classes and Interfaces
+
+- Python does not have built-in support for interfaces, but it can be achieved using Abstract Base Classes (ABCs) from the `abc` module. ABCs allow you to define abstract methods that must be implemented by any subclass.
+
+```python
+from abc import ABC, abstractmethod
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+    def area(self):
+        return 3.14 * self.radius ** 2
+```
+
+### Exception Handling
+
+```python
+try:
+    num = int(input("Enter number: "))
+    result = 10 / num
+
+except (ValueError, ZeroDivisionError, TypeError):
+    print("Invalid number")
+
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+else:
+    print("You entered:", num)
+
+finally:
+    print("Execution completed")
+```
+
+#### Common Built-in Exceptions
+
+| Exception           | Cause                  |
+| ------------------- | ---------------------- |
+| `ValueError`        | Invalid value          |
+| `TypeError`         | Wrong data type        |
+| `ZeroDivisionError` | Division by zero       |
+| `IndexError`        | Invalid list index     |
+| `KeyError`          | Missing dictionary key |
+| `FileNotFoundError` | File does not exist    |
+
+##### Custom Exceptions
+
+```python
+class InvalidAgeError(Exception):
+    pass
+
+age = -5
+
+if age < 0:
+    raise InvalidAgeError("Invalid age")
+```
+
+
+### File Handling
+
+```python
+with open('file.txt', 'r') as file:
+    content = file.read()
+    print(content)
+with open('file.txt', 'w') as file:
+    file.write("Hello, World!")
+```
+
+#### File Methods
+| Method        | Description      |
+| ------------- | ---------------- |
+| `read()`      | Read entire file |
+| `readline()`  | Read one line    |
+| `readlines()` | Read all lines   |
+| `write()`     | Write text       |
+| `close()`     | Close file       |
+
+#### File Modes
+| Mode  | Description         |
+| ----- | ------------------- |
+| `"r"` | Read file           |
+| `"w"` | Write (overwrite)   |
+| `"a"` | Append              |
+| `"x"` | Create new file     |
+| `"b"` | Binary mode         |
+| `"t"` | Text mode (default) |
+
+
+### Modules and Packages
+
+A module is a single Python file (.py) containing code such as:
+
+```python
+# math_utils.py
+
+PI = 3.14
+
+def add(a, b):
+    return a + b
+```
+
+A package is a collection of modules organized in directories.
